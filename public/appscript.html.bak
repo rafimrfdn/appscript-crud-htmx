@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>halo from appscript</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+  <script src="https://unpkg.com/htmx.org@1.9.10"
+    integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC"
+    crossorigin="anonymous"></script>
+
+</head>
+
+<body>
+  <h1>Data from Google Sheets</h1>
+  <ul id="dataList"></ul>
+  <form id="myForm">
+    <input type="text" name="name" placeholder="Name"><br><br>
+    <input type="email" name="email" placeholder="Email"><br><br>
+    <input type="tel" name="phone" placeholder="Phone"><br><br>
+    <input type="submit" id="sub" value="Submit">
+  </form>
+
+
+
+  <script>
+    // Function to fetch and display data from the Google Sheets
+    function fetchData() {
+      fetch('https://script.google.com/macros/s/AKfycbyIXKDtFeDsDpQRa6B_3vUjnlbT6qtiHQM6HxeI-Clg/dev')
+        .then(response => response.json())
+        .then(data => {
+          const dataList = document.getElementById('dataList');
+          dataList.innerHTML = ''; // Clear existing data
+          data.forEach(entry => {
+            const listItem = document.createElement('li');
+            listItem.textContent = `Name: ${entry.name}, Email: ${entry.email}, Phone: ${entry.phone}`;
+
+            // Create Edit button
+            const editButton = document.createElement('button');
+            editButton.textContent = 'Edit';
+            editButton.addEventListener('click', () => editEntry(entry.id));
+
+            // Create Delete button
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.addEventListener('click', () => deleteEntry(entry.id));
+
+            // Append buttons to list item
+            listItem.appendChild(editButton);
+            listItem.appendChild(deleteButton);
+
+            dataList.appendChild(listItem);
+          });
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    // Initial data fetch
+    fetchData();
+
+    // Form submission handler
+    document.getElementById('myForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      document.getElementById('sub').value = 'Submitting...';
+      const formData = new FormData(this);
+      fetch('https://script.google.com/macros/s/AKfycbxMpJX8vzwVZ9Yk4azu-obO_tQqq9b9SEWDqN3VaL0jy3qFpM82N2gmdUw3fzQtFEa3Hg/exec', {
+        method: 'POST',
+        body: formData
+      })
+        .then(response => response.text())
+        .then(message => {
+          console.log(message);
+          fetchData(); // Refresh data after creating entry
+          document.getElementById('sub').value = 'Submit';
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          document.getElementById('sub').value = 'Submit';
+        });
+    });
+
+    // Edit entry function
+    function editEntry(id) {
+      const newName = prompt('Enter new name:');
+      const newEmail = prompt('Enter new email:');
+      const newPhone = prompt('Enter new phone:');
+      if (newName && newEmail && newPhone) {
+        const updatedData = {id: id, name: newName, email: newEmail, phone: newPhone};
+        fetch('https://script.google.com/macros/s/AKfycbxMpJX8vzwVZ9Yk4azu-obO_tQqq9b9SEWDqN3VaL0jy3qFpM82N2gmdUw3fzQtFEa3Hg/exec/update', {
+          method: 'PUT',
+          body: JSON.stringify(updatedData),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+          .then(response => response.text())
+          .then(message => {
+            console.log(message);
+            fetchData(); // Refresh data after updating entry
+          })
+          .catch(error => console.error('Error:', error));
+      } else {
+        alert('Invalid input!');
+      }
+    }
+
+    // Delete entry function
+    function deleteEntry(id) {
+      const confirmDelete = confirm('Are you sure you want to delete this entry?');
+      if (confirmDelete) {
+        fetch('https://script.google.com/macros/s/AKfycbxMpJX8vzwVZ9Yk4azu-obO_tQqq9b9SEWDqN3VaL0jy3qFpM82N2gmdUw3fzQtFEa3Hg/exec/delete', {
+          method: 'DELETE',
+          body: JSON.stringify({id: id}),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+          .then(response => response.text())
+          .then(message => {
+            console.log(message);
+            fetchData(); // Refresh data after deleting entry
+          })
+          .catch(error => console.error('Error:', error));
+      }
+    }
+  </script>
+</body>
+
+</html>
