@@ -1,92 +1,89 @@
 const express = require('express');
 const axios = require('axios');
-const bodyParser = require('body-parser');
 
 const app = express();
-const PORT = 3000; // You can change this to your desired port
+const port = 3000;
 
-// Middleware to parse incoming request bodies
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-let counter = 0;
 app.use(express.static('public'));
 
-app.get('/api/increment', (req, res) => {
-  counter++;
-  const updatedHTML = `<h2 id="counter">counter: <span>${counter}</span></h2>`;
-   
-  res.send(updatedHTML);
-})
+const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbyaLyPo6_F_Shgza5Y8RWvjd94T99xBYQ2u_yuPqD9V-02HOliFqc5cX31UC9KsryBb/exec';
 
-// Define a route to handle incoming requests
-app.get('/read-data', async (req, res) => {
-    try {
-        const tableName = req.query.table;
+// Function to generate table header
+function generateTableHeader(headers) {
+  let headerHTML = '<tr>';
+  headers.forEach(header => {
+    headerHTML += `<th>${header}</th>`;
+  });
+  headerHTML += '</tr>';
+  return headerHTML;
+}
 
-        if (!tableName) {
-            return res.status(400).send('Table name is required');
-        }
 
-        const url = `https://script.google.com/macros/s/AKfycbzUVYgltZPTREmiMQe4Jv2PtA_DU9SgidezuW-j8uwQb3ocxPmKAZMiw7EWmu9AUTrCog/exec?action=read&table=${tableName}`;
 
-        const response = await axios.get(url);
+// Route for reading data
+app.get('/users', async (req, res) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}?action=read&table=Users`);
+    const users = response.data;
 
-        // Assuming data is an array of objects with 'id', 'username', and 'email' properties
-        const data = response.data.data;
+    // Define table headers
+    const tableHeaders = ['ID', 'Username', 'Email'];
 
-        // Render HTML template with list items
-        res.send(`
-                <ul>
-                    ${data.map(item => `<li>ID: ${item.id}, Username: ${item.username}, Email: ${item.email} <button hx-get="/edit">edit</button></li>`).join('')}
-                </ul>
-        `);
-    } catch (error) {
-        console.error('Error:', error.message);
-        res.status(500).send('Internal server error');
-    }
+    // Generate table header HTML
+    const tableHeaderHTML = generateTableHeader(tableHeaders);
+
+    // Generate table rows HTML
+    let tableRowsHTML = '';
+    users.forEach(user => {
+      tableRowsHTML += `<tr><td>${user.id}</td><td>${user.username}</td><td>${user.email}</td></tr>`;
+    });
+
+    // Generate final HTML
+    const userListHTML = `<table>${tableHeaderHTML}${tableRowsHTML}</table>`;
+
+    res.send(userListHTML);
+  } catch (error) {
+    res.status(500).send('Internal Server Error');
+  }
 });
 
-// Route to handle form submission and post new data to Google Sheets via Apps Script
-app.post('/submit-data', async (req, res) => {
-    try {
-        // Extract data from the form submission
-        const newData = {
-            id: req.body.id,
-            username: req.body.username,
-            email: req.body.email,
-            timestamp: Date.now(), // Add timestamp
-            currentTime: new Date().toLocaleString(), // Add current time
-        };
-        console.log(newData)
-
-        // Extract table name from query parameter
-        const tableName = req.query.table;
-
-        if (!tableName) {
-            return res.status(400).send('Table name is required');
-        }
-
-        // Construct the URL with table name and data
-        const url = `https://script.google.com/macros/s/AKfycbyaLyPo6_F_Shgza5Y8RWvjd94T99xBYQ2u_yuPqD9V-02HOliFqc5cX31UC9KsryBb/exec?action=insert&table=${tableName}&data=${JSON.stringify(newData)}`;
-
-        console.log(url)
-
-        // Post the new data to Google Sheets via Apps Script endpoint
-        const response = await axios.post(url);
-
-        // Check the response from Apps Script endpoint
-        if (response.data.success) {
-            res.send('Data submitted successfully and added to Google Sheets!');
-        } else {
-            res.status(500).send('Error adding data to Google Sheets');
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        res.status(500).send('Internal server error');
-    }
+// Route for inserting data
+app.post('/users', async (req, res) => {
+  const userData = req.body;
+  try {
+    const response = await axios.post(`${API_BASE_URL}?action=insert&table=Users`, userData);
+    res.json(response.data);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+// Route for updating data
+app.put('/users/:id', async (req, res) => {
+  const { id } = req.params;
+  const userData = req.body;
+  try {
+    const response = await axios.put(`${API_BASE_URL}?action=update&table=Users&id=${id}`, userData);
+    res.json(response.data);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Route for deleting data
+app.delete('/users/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const response = await axios.delete(`${API_BASE_URL}?action=delete&table=Users&id=${id}`);
+    res.json(response.data);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
