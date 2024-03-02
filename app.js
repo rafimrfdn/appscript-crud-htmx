@@ -1,16 +1,23 @@
 const express = require('express');
+const app = express();
+// const port = 3000;
 const axios = require('axios');
+
+const path = require('path');
+const PORT = process.env.PORT || 3000;
+
+
 const bodyParser = require('body-parser');
 
-const app = express();
-const PORT = 3000; // You can change this to your desired port
-
-// Middleware to parse incoming request bodies
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-
 let counter = 0;
-app.use(express.static('public'));
+
+app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  next();
+});
 
 app.get('/api/increment', (req, res) => {
   counter++;
@@ -19,74 +26,89 @@ app.get('/api/increment', (req, res) => {
   res.send(updatedHTML);
 })
 
-// Define a route to handle incoming requests
-app.get('/read-data', async (req, res) => {
+// Define route for reading data
+app.get('/fetchdata', async (req, res) => {
     try {
-        const tableName = req.query.table;
+        // Send GET request to your AppScript endpoint
+        const response = await axios.get('https://script.google.com/macros/s/AKfycbyaLyPo6_F_Shgza5Y8RWvjd94T99xBYQ2u_yuPqD9V-02HOliFqc5cX31UC9KsryBb/exec?action=read&table=Users');
 
-        if (!tableName) {
-            return res.status(400).send('Table name is required');
-        }
-
-        const url = `https://script.google.com/macros/s/AKfycbzUVYgltZPTREmiMQe4Jv2PtA_DU9SgidezuW-j8uwQb3ocxPmKAZMiw7EWmu9AUTrCog/exec?action=read&table=${tableName}`;
-
-        const response = await axios.get(url);
-
-        // Assuming data is an array of objects with 'id', 'username', and 'email' properties
+ // Extract data from the response
         const data = response.data.data;
 
-        // Render HTML template with list items
-        res.send(`
-                <ul>
-                    ${data.map(item => `<li>ID: ${item.id}, Username: ${item.username}, Email: ${item.email} <button hx-get="/edit">edit</button></li>`).join('')}
-                </ul>
-        `);
+        // Render HTML template with the data
+        let html = `
+                    <div class="grid" >
+        `;
+        
+        data.forEach(item => {
+            html += `
+                <div>
+                    ${item.id} ${item.username} ${item.email}
+                    <!-- <button class="button" onclick="editItem('${item.id}')">Edit</button>-->
+                     <button class="button" onclick="deleteItem('${item.id}')">Delete</button>
+                </div>
+            `;
+        });
+        
+        html += `
+                    </div>
+                    <script>
+                        function editItem(id) {
+                            // Implement edit functionality
+                            console.log('Edit item with ID:', id);
+                        }
+                        
+                        async function deleteItem(id) {
+                            try {
+                                const confirmDelete = confirm('Are you sure you want to delete this item?');
+                                if (!confirmDelete) return;
+
+                                // Send DELETE request to delete item
+                                await axios.delete('https://script.google.com/macros/s/AKfycbyaLyPo6_F_Shgza5Y8RWvjd94T99xBYQ2u_yuPqD9V-02HOliFqc5cX31UC9KsryBb/exec?action=delete&table=Users&id=' + id);
+                                
+                                // Reload the page after successful deletion
+                                window.location.reload();
+                            } catch (error) {
+                                console.error('Error deleting item:', error);
+                                alert('Error deleting item');
+                            }
+                        }
+                    </script>
+                </body>
+            </html>
+        `;
+        
+        res.send(html);
     } catch (error) {
-        console.error('Error:', error.message);
-        res.status(500).send('Internal server error');
+        console.error('Error fetching data:', error);
+        res.status(500).send('Error fetching data');
     }
 });
 
-// Route to handle form submission and post new data to Google Sheets via Apps Script
-app.post('/submit-data', async (req, res) => {
-    try {
-        // Extract data from the form submission
-        const newData = {
-            id: req.body.id,
-            username: req.body.username,
-            email: req.body.email,
-            timestamp: Date.now(), // Add timestamp
-            currentTime: new Date().toLocaleString(), // Add current time
-        };
-        console.log(newData)
+// Handle form submission
+app.get('/submit', (req, res) => {
+    // Get form data from query parameters
+    const data = JSON.parse(decodeURIComponent(req.query.data));
+    const id = data.id;
+    const username = data.username;
+    const email = data.email;
+    const timestamp = data.timestamp;
+    const currentTime = data.currentTime;
 
-        // Extract table name from query parameter
-        const tableName = req.query.table;
+    // Here you can handle the form data as needed
+    console.log("Received form data:");
+    console.log("ID:", id);
+    console.log("Username:", username);
+    console.log("Email:", email);
+    console.log("Timestamp:", timestamp);
+    console.log("Current Time:", currentTime);
 
-        if (!tableName) {
-            return res.status(400).send('Table name is required');
-        }
-
-        // Construct the URL with table name and data
-        const url = `https://script.google.com/macros/s/AKfycbyaLyPo6_F_Shgza5Y8RWvjd94T99xBYQ2u_yuPqD9V-02HOliFqc5cX31UC9KsryBb/exec?action=insert&table=${tableName}&data=${JSON.stringify(newData)}`;
-
-        console.log(url)
-
-        // Post the new data to Google Sheets via Apps Script endpoint
-        const response = await axios.post(url);
-
-        // Check the response from Apps Script endpoint
-        if (response.data.success) {
-            res.send('Data submitted successfully and added to Google Sheets!');
-        } else {
-            res.status(500).send('Error adding data to Google Sheets');
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        res.status(500).send('Internal server error');
-    }
+    // Respond with a success message
+    res.send("Form data received successfully!");
 });
 
+// Start the server
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+    console.log(`Server is running on http://localhost:${PORT}`);
 });
+

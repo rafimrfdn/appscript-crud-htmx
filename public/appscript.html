@@ -1,78 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Display</title>
-  <script src="https://unpkg.com/htmx.org@1.9.10"
-    integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC"
-    crossorigin="anonymous"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRUD App without HTMX</title>
 </head>
 <body>
-    <h1>Data Display</h1>
+  <h1>CRUD App without HTMX</h1>
 
-        <h1>New Data Form</h1>
-    <!-- <form action="/submit-data?table=Users" method="POST"  hx-vals="form"> -->
-    <form   >
-        <input name="id" required><br><br>
-        <input name="username" required><br><br>
-        <input name="email" required><br><br>
-            <button 
-                hx-trigger="click"
-                hx-post="/submit-data?table=Users"
-            >Add User</button>
-    </form>
+  <!-- Form for adding a new user -->
+  <h2>Add User</h2>
+  <form id="addUserForm" action="/submit-data?table=Users" method="post">
+    <input type="text" name="id" placeholder="ID" required>
+    <input type="text" name="username" placeholder="Username" required>
+    <input type="email" name="email" placeholder="Email" required>
+    <button type="submit">Add User</button>
+  </form>
 
-        <!-- <form> -->
-        <!--     <input  type="text" name="username" placeholder="username" class="border"/> -->
-        <!--     <button  -->
-        <!--         class="bg-green-200" -->
-        <!--         hx-include="[name=username]" -->
-        <!--         hx-trigger="click" -->
-        <!--         hx-post="/users" -->
-        <!--         hx-target="#notification" -->
-        <!--         id="saveButton" -->
-        <!--     >Add User</button> -->
-        <!-- </form> -->
+  <!-- Container for displaying users -->
+  <h2>Users</h2>
+  <ul id="userList">
+    <!-- List items will be populated dynamically from server response -->
+  </ul>
 
-        <button hx-get="/read-data?table=Users" hx-swap="outerHTML" hx-target="#data-list">Show the data</button>
+  <!-- Script to handle form submissions -->
+  <script>
+    // Function to fetch and update the user list
+    async function updateUserList() {
+      const response = await fetch('/users');
+      const users = await response.text();
+      document.getElementById('userList').innerHTML = users;
+    }
 
+    // Add event listener to form submission
+    document.getElementById('addUserForm').addEventListener('submit', async (event) => {
+      event.preventDefault(); // Prevent default form submission
 
-    <ul id="data-list"></ul>
+      const form = event.target;
+      const formData = new FormData(form);
 
-    <!-- <div id="datas"></div> -->
+      try {
+        // Convert formData to JSON for debugging
+        const formDataJson = {};
+        for (const [key, value] of formData.entries()) {
+          formDataJson[key] = value;
+        }
+        console.log(formDataJson);
 
-    <script>
-        // Function to fetch data from the server and display it
-        // async function fetchData() {
-        //     try {
-        //         // Perform an HTMX request to fetch data
-        //         const response = await fetch('https://script.google.com/macros/s/AKfycbzUVYgltZPTREmiMQe4Jv2PtA_DU9SgidezuW-j8uwQb3ocxPmKAZMiw7EWmu9AUTrCog/exec?action=read&table=Users');
-        //         const data = await response.json();
-        //
-        //         // Display the data in the HTML page as list items
-        //         const dataList = document.getElementById('data-list');
-        //
-        //         // Check if the data contains the expected structure
-        //         if (data.success && Array.isArray(data.data)) {
-        //             data.data.forEach(item => {
-        //                 const listItem = document.createElement('li');
-        //                 listItem.textContent = `ID: ${item.id}, Username: ${item.username}, Email: ${item.email}`; // Customize as needed
-        //                 dataList.appendChild(listItem);
-        //             });
-        //         } else {
-        //             const listItem = document.createElement('li');
-        //             listItem.textContent = 'No data available';
-        //             dataList.appendChild(listItem);
-        //         }
-        //     } catch (error) {
-        //         console.error('Error:', error);
-        //     }
-        // }
-        //
-        // // Call the fetchData function when the page loads
-        // window.onload = fetchData;
+        const response = await fetch(form.action, {
+          method: 'POST',
+          body: formData
+        });
 
-    </script>
+        if (response.ok) {
+          alert('User added successfully!');
+          form.reset(); // Reset the form fields
+          updateUserList(); // Update the user list
+        } else {
+          alert('Failed to add user. Please try again.');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while adding user. Please try again later.');
+      }
+    });
+
+    // Fetch and update the user list on page load
+    window.onload = updateUserList();
+  </script>
 </body>
 </html>
