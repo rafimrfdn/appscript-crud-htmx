@@ -1,0 +1,45 @@
+const express = require('express');
+const app = express();
+// const port = 3000;
+const path = require('path');
+const PORT = process.env.PORT || 3000;
+
+let counter = 0;
+
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.get('/api/increment', (req, res) => {
+  counter++;
+  const updatedHTML = `<h2 id="counter">counter: <span>${counter}</span></h2>`;
+   
+  res.send(updatedHTML);
+})
+
+
+// Handle form submission
+app.get('/submit', (req, res) => {
+    // Get form data from query parameters
+    const data = JSON.parse(decodeURIComponent(req.query.data));
+    const id = data.id;
+    const username = data.username;
+    const email = data.email;
+    const timestamp = data.timestamp;
+    const currentTime = data.currentTime;
+
+    // Here you can handle the form data as needed
+    console.log("Received form data:");
+    console.log("ID:", id);
+    console.log("Username:", username);
+    console.log("Email:", email);
+    console.log("Timestamp:", timestamp);
+    console.log("Current Time:", currentTime);
+
+    // Respond with a success message
+    res.send("Form data received successfully!");
+});
+
+// Start the server
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+});
+

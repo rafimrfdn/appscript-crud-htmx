@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<<<<<<< HEAD
   <title>CRUD App with HTMX</title>
   <script src="https://unpkg.com/htmx.org/dist/htmx.min.js"></script>
 </head>
@@ -15,10 +16,25 @@
     <input type="text" name="name" placeholder="Name" required>
     <input type="email" name="email" placeholder="Email" required>
     <button type="submit" hx-post="/users">Add User</button>
+=======
+  <title>CRUD App without HTMX</title>
+</head>
+<body>
+  <h1>CRUD App without HTMX</h1>
+
+  <!-- Form for adding a new user -->
+  <h2>Add User</h2>
+  <form id="addUserForm" action="/submit-data?table=Users" method="post">
+    <input type="text" name="id" placeholder="ID" required>
+    <input type="text" name="username" placeholder="Username" required>
+    <input type="email" name="email" placeholder="Email" required>
+    <button type="submit">Add User</button>
+>>>>>>> new
   </form>
 
   <!-- Container for displaying users -->
   <h2>Users</h2>
+<<<<<<< HEAD
   <ul id="userList" hx-get="/users">
     <li hx-target="this" hx-swap="outerHTML">
       <div hx-var="name"></div> - <div hx-var="email"></div>
@@ -46,6 +62,56 @@
         htmx.ajax(form.getAttribute('action'), 'put', formData, { 'hx-target': `#userList li[data-user-id="${userId}"]`, 'hx-swap': 'outerHTML' });
       }
     });
+=======
+  <ul id="userList">
+    <!-- List items will be populated dynamically from server response -->
+  </ul>
+
+  <!-- Script to handle form submissions -->
+  <script>
+    // Function to fetch and update the user list
+    async function updateUserList() {
+      const response = await fetch('/users');
+      const users = await response.text();
+      document.getElementById('userList').innerHTML = users;
+    }
+
+    // Add event listener to form submission
+    document.getElementById('addUserForm').addEventListener('submit', async (event) => {
+      event.preventDefault(); // Prevent default form submission
+
+      const form = event.target;
+      const formData = new FormData(form);
+
+      try {
+        // Convert formData to JSON for debugging
+        const formDataJson = {};
+        for (const [key, value] of formData.entries()) {
+          formDataJson[key] = value;
+        }
+        console.log(formDataJson);
+
+        const response = await fetch(form.action, {
+          method: 'POST',
+          body: formData
+        });
+
+        if (response.ok) {
+          alert('User added successfully!');
+          form.reset(); // Reset the form fields
+          updateUserList(); // Update the user list
+        } else {
+          alert('Failed to add user. Please try again.');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while adding user. Please try again later.');
+      }
+    });
+
+    // Fetch and update the user list on page load
+    window.onload = updateUserList();
+>>>>>>> new
   </script>
 </body>
 </html>

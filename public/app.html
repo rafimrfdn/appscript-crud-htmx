@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Form</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+  <script src="https://unpkg.com/htmx.org@1.9.10"
+    integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC"
+    crossorigin="anonymous"></script>
+</head>
+<body>
+        <div class="grid">
+            <form id="submitForm" onsubmit="submitData(event)">
+                <label for="id">ID:</label>
+                <input type="number" id="id" name="id" required><br><br>
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required><br><br>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required><br><br>
+                <input type="submit" value="Submit">
+            </form>
+        </div>
+
+    <script>
+        function submitData(event) {
+            event.preventDefault();
+
+            // Get form values
+            var id = document.getElementById("id").value;
+            var username = document.getElementById("username").value;
+            var email = document.getElementById("email").value;
+
+            // Get current timestamp
+            var timestamp = Math.floor(Date.now() / 1000);
+
+            // Get current time and format it
+            var currentTime = formatDate(new Date());
+
+            // Construct data parameter
+            var data = {
+                id: id,
+                username: username,
+                email: email,
+                timestamp: timestamp,
+                currentTime: currentTime
+            };
+
+            // Encode data parameter
+            var encodedData = encodeURIComponent(JSON.stringify(data));
+
+            // Construct URL
+            var url = "https://script.google.com/macros/s/AKfycbyaLyPo6_F_Shgza5Y8RWvjd94T99xBYQ2u_yuPqD9V-02HOliFqc5cX31UC9KsryBb/exec?action=insert&table=Users&data=" + encodedData;
+
+            // Redirect to URL
+            window.location.href = url;
+        }
+
+        // Function to format date as "MM/DD/YYYY HH:MM:SS"
+        function formatDate(date) {
+            var month = date.getMonth() + 1;
+            var day = date.getDate();
+            var year = date.getFullYear();
+            var hours = date.getHours();
+            var minutes = date.getMinutes();
+            var seconds = date.getSeconds();
+
+            return month + '/' + day + '/' + year + ' ' + hours + ':' + minutes + ':' + seconds;
+        }
+    </script>
+</body>
+</html>

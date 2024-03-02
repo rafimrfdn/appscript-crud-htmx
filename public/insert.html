@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+</head>
+<body>
+  <h2>Insert Data</h2>
+  <form id="insertForm">
+    <label for="id">ID:</label><br>
+    <input type="text" id="id" name="id"><br>
+    
+    <label for="username">Username:</label><br>
+    <input type="text" id="username" name="username"><br>
+    
+    <label for="email">Email:</label><br>
+    <input type="email" id="email" name="email"><br>
+    
+    <input type="submit" value="Submit">
+  </form>
+
+  <script>
+  document.getElementById("insertForm").addEventListener("submit", function(event) {
+    event.preventDefault(); // Prevent the default form submission
+    
+    var formData = new FormData(this);
+    var jsonData = {};
+    
+    formData.forEach(function(value, key){
+      jsonData[key] = value;
+    });
+
+    // Send the form data to the server using AJAX
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "/submit", true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4 && xhr.status === 200) {
+        console.log(xhr.responseText);
+        // Optionally, you can display a success message to the user
+      }
+    };
+    xhr.send(JSON.stringify(jsonData));
+
+    // Reset the form after submission
+    this.reset();
+  });
+</script>
+  </script>
+</body>
+</html>
