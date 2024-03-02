@@ -1,1 +1,0 @@
-var wbook = SpreadsheeetApp.openByUrl('')
