@@ -35,7 +35,8 @@ app.post('/submit', async (req, res) => {
 try {
     // Generate timestamp and currentTime
 
-    const timestamp = new Date().toISOString();
+    var timestamp = Math.floor(Date.now() / 1000);
+    // const timestamp = new Date().toISOString();
     // const currentTime = new Date().toLocaleTimeString();
 
     var currentTime = formatDate(new Date());
@@ -74,31 +75,6 @@ try {
 });
 
 
-// Define a route for the /fetchData endpoint
-// app.get('/fetchData', async (req, res) => {
-//   try {
-//     const data = await fetchExternalData(); // Call the function to fetch data
-//         // res.json();
-//     res.send(data);
-//   } catch (error) {
-//     console.error("Error fetching data:", error);
-//     res.status(500).json({ error: "Error fetching data" });
-//   }
-// });
-//
-// // Function to fetch data from the external API
-// async function fetchExternalData() {
-//   const response = await fetch("https://script.google.com/macros/s/AKfycbyaLyPo6_F_Shgza5Y8RWvjd94T99xBYQ2u_yuPqD9V-02HOliFqc5cX31UC9KsryBb/exec?action=read&table=Users");
-//   if (!response.ok) {
-//     throw new Error("Failed to fetch data");
-//   }
-//   return response.json();
-//   const myJSON = JSON.strigify(response);
-//   // return response.text();
-// };
-
-
-
 
 
 app.get('/fetchData', async (req, res) => {
@@ -111,6 +87,11 @@ app.get('/fetchData', async (req, res) => {
     res.status(500).json({ error: "Error fetching data" });
   }
 });
+
+
+
+
+
 
 // Function to fetch data from the external API
 async function fetchExternalData() {
@@ -133,23 +114,8 @@ function generateHTML(data) {
   return html;
 }
 
-// Route to handle delete requests -- berhasil pakai ini, pastikan install axios
-// app.get('/delete/:id', async (req, res) => {
-//   try {
-//     const id = req.params.id;
-//     const deleteUrl = `https://script.google.com/macros/s/AKfycbyaLyPo6_F_Shgza5Y8RWvjd94T99xBYQ2u_yuPqD9V-02HOliFqc5cX31UC9KsryBb/exec?action=delete&table=Users&id=${id}`;
-//
-//     const response = await axios.get(deleteUrl);
-//     if (response.status !== 200) {
-//       throw new Error("Failed to delete item");
-//     }
-//
-//     res.send("Item deleted successfully");
-//   } catch (error) {
-//     console.error("Error deleting item:", error);
-//     res.status(500).json({ error: "Error deleting item" });
-//   }
-// });
+
+
 
 
 // Route to handle delete requests
@@ -175,103 +141,20 @@ app.get('/delete/:id', async (req, res) => {
 
 
 
-
-
-
-
-
-
-
-
-
-// app.get('/lihat', async (req, res) => {
-//     async function fetchData() {
-//         const res = await fetch('https://script.google.com/macros/s/AKfycbyaLyPo6_F_Shgza5Y8RWvjd94T99xBYQ2u_yuPqD9V-02HOliFqc5cX31UC9KsryBb/exec?action=read&table=Users');
-//         try {
-//             // const json = await res.text();
-//             const json = await res.json();
-//             // console.log(json);
-//             console.log(json.success);
-//             console.log(json.data);
-//             return 
-//         } catch {
-//             console.log("gagal fetch")
-//         }
-//     }
-//     fetchData();
-// });
-
-
-// app.get('/lihat', async (req, res) => {
-//     function tampilkan() {fetch('https://script.google.com/macros/s/AKfycbyaLyPo6_F_Shgza5Y8RWvjd94T99xBYQ2u_yuPqD9V-02HOliFqc5cX31UC9KsryBb/exec?action=read&table=Users')
-//         .then(function (res) {
-//             return res.json();
-//         })
-//         .then(function (res) {
-//             // const dataArray = res.data.map(function(item) {
-//             //     return {
-//             //         id: item.id,
-//             //         username: item.username,
-//             //         email: item.email
-//             //     };
-//             // });
-//             // console.log(dataArray);
-//         });
-//     }
-//     res.send(tampilkan());
-// });
-
-
-
-// app.get('/lihat', async (req, res) => {
-//     const endpointread = 'https://script.google.com/macros/s/AKfycbyaLyPo6_F_Shgza5Y8RWvjd94T99xBYQ2u_yuPqD9V-02HOliFqc5cX31UC9KsryBb/exec?action=read&table=Users';
-//
-//     async function tampilkan() {
-//         const api = await fetch(endpointread)
-//         const { data } = await api.json()
-//         console.log(data)
-//     }
-//     res.send(tampilkan());
-// });
-
 app.get('/lihat', async (req, res) => {
     const endpointread = 'https://script.google.com/macros/s/AKfycbyaLyPo6_F_Shgza5Y8RWvjd94T99xBYQ2u_yuPqD9V-02HOliFqc5cX31UC9KsryBb/exec?action=read&table=Users';
+
+    function showInfo(data) {
+        console.log(data);
+    }
 
     fetch(endpointread)
     .then(response => response.json())
     .then(data => showInfo(data));
 
-    function showInfo(data) {
-        console.log(data);
-    }
+    // res.json(JSON.stringify(showInfo));
     res.send(showInfo());
 });
-
-
-
-// Handle form submission
-// app.get('/submit', (req, res) => {
-//     // Get form data from query parameters
-//     const data = JSON.parse(decodeURIComponent(req.query.data));
-//     const id = data.id;
-//     const username = data.username;
-//     const email = data.email;
-//     const timestamp = data.timestamp;
-//     const currentTime = data.currentTime;
-//
-//     // Here you can handle the form data as needed
-//     console.log("Received form data:");
-//     console.log("ID:", id);
-//     console.log("Username:", username);
-//     console.log("Email:", email);
-//     console.log("Timestamp:", timestamp);
-//     console.log("Current Time:", currentTime);
-//
-//     // Respond with a success message
-//     res.send("Form data received successfully!");
-// });
-
-
 
 
 
