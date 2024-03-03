@@ -4,15 +4,15 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title></title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/htmx.org@1.9.10" integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC" crossorigin="anonymous"></script>
-</head>
-<body>
-            <div>
-               <button hx-trigger="load, click" data-loading hx-get="/fetchdata" hx-target="#dataContainer" hx-swap="innerHTML" >Fetch Submitted Data</button>
-
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script src="https://unpkg.com/htmx.org@1.9.10" integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC" crossorigin="anonymous"></script>
+    </head>
+    <body>
+        <div>
+            <button hx-trigger="load, click" data-loading hx-get="/fetchData" hx-target="#dataContainer" hx-swap="innerHTML" >Fetch Submitted Data</button>
             <h1>list data</h1>
-                <div id="dataContainer"></div>
+            <div> hapus<div id="dataContainer"></div>
             </div>
+        </div>
     </body>
 </html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title></title>
+  <script src="https://unpkg.com/htmx.org@1.9.10"
+    integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC"
+    crossorigin="anonymous"></script>
+    </head>
+    <body>
+        <!-- <form hx-vals="#id,#username,#email"> -->
+<form id="myForm" hx-post="/submit" hx-target="#response">
+    <input type="text" id="id" name="id" placeholder="ID">
+    <input type="text" id="username" name="username" placeholder="Username">
+    <input type="email" id="email" name="email" placeholder="Email">
+    <button type="submit" hx-swap="outerHTML">Submit</button>
+  </form>
+        <div id="response"></div>
+
+
+
+  <div id="result"></div>
+
+        <!-- <button hx-get="/lihat" hx-target="#values">lihatt</button> -->
+        <button hx-get="/lihat" hx-target="#values">lihatt</button>
+        <!-- <button hx-get="/fetchData" hx-target="#values">fetch data</button> -->
+        <button hx-trigger="load, click" hx-get="/fetchData" hx-target="#values">fetch data</button>
+        <div id="values"></div>
+        <ul></ul>
+        <script>
+
+
+        </script>
+    </body>
+</html>

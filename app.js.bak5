@@ -30,49 +30,6 @@ app.get('/api/increment', (req, res) => {
 })
 
 
-// Handle form submission
-app.post('/submit', async (req, res) => {
-try {
-    // Generate timestamp and currentTime
-
-    const timestamp = new Date().toISOString();
-    // const currentTime = new Date().toLocaleTimeString();
-
-    var currentTime = formatDate(new Date());
-        // Function to format date as "MM/DD/YYYY HH:MM:SS"
-        function formatDate(date) {
-            var month = date.getMonth() + 1;
-            var day = date.getDate();
-            var year = date.getFullYear();
-            var hours = date.getHours();
-            var minutes = date.getMinutes();
-            var seconds = date.getSeconds();
-
-            return month + '/' + day + '/' + year + ' ' + hours + ':' + minutes + ':' + seconds;
-        };
-
-    // Prepare data object
-    const data = {
-      id: req.body.id,
-      username: req.body.username,
-      email: req.body.email,
-      timestamp,
-      currentTime
-    };
-        console.log(data);
-
-    // Send data to the endpoint
-    const response = await axios.get('https://script.google.com/macros/s/AKfycbyaLyPo6_F_Shgza5Y8RWvjd94T99xBYQ2u_yuPqD9V-02HOliFqc5cX31UC9KsryBb/exec?action=insert&table=Users&data=' + encodeURIComponent(JSON.stringify(data)));
-
-    // Send back response from the endpoint
-    // res.json(response.data);
-    res.send("data dengan <b>id</b>" + ` ${data.id} ` + "username" + `<b> ${data.username} </b>` + "berhasil diterima");
-  } catch (error) {
-    console.error('Error submitting data:', error);
-    res.status(500).json({ error: 'An error occurred while submitting data.' });
-  }
-});
-
 
 // Define a route for the /fetchData endpoint
 // app.get('/fetchData', async (req, res) => {
@@ -250,33 +207,26 @@ app.get('/lihat', async (req, res) => {
 
 
 // Handle form submission
-// app.get('/submit', (req, res) => {
-//     // Get form data from query parameters
-//     const data = JSON.parse(decodeURIComponent(req.query.data));
-//     const id = data.id;
-//     const username = data.username;
-//     const email = data.email;
-//     const timestamp = data.timestamp;
-//     const currentTime = data.currentTime;
-//
-//     // Here you can handle the form data as needed
-//     console.log("Received form data:");
-//     console.log("ID:", id);
-//     console.log("Username:", username);
-//     console.log("Email:", email);
-//     console.log("Timestamp:", timestamp);
-//     console.log("Current Time:", currentTime);
-//
-//     // Respond with a success message
-//     res.send("Form data received successfully!");
-// });
+app.get('/submit', (req, res) => {
+    // Get form data from query parameters
+    const data = JSON.parse(decodeURIComponent(req.query.data));
+    const id = data.id;
+    const username = data.username;
+    const email = data.email;
+    const timestamp = data.timestamp;
+    const currentTime = data.currentTime;
 
+    // Here you can handle the form data as needed
+    console.log("Received form data:");
+    console.log("ID:", id);
+    console.log("Username:", username);
+    console.log("Email:", email);
+    console.log("Timestamp:", timestamp);
+    console.log("Current Time:", currentTime);
 
-
-
-
-
-
+    // Respond with a success message
+    res.send("Form data received successfully!");
+});
 
 // Start the server
 const port = process.env.PORT || 3000;
