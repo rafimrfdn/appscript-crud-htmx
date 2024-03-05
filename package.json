@@ -2,9 +2,9 @@
   "name": "htmx-app",
   "version": "1.0.0",
   "description": "",
-  "main": "index.ts",
+  "main": "index.js",
     "engines": {
-        "node": "20.x"
+        "node": "18.x"
     },
   "scripts": {
     "dev": "nodemon index.js"
