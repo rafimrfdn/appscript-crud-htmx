@@ -22,6 +22,15 @@
 
         <a href="appscript.html">appscript</a>
 
+        <br/>
+        <br/>
+<form id="myForm" hx-post="/submit" hx-target="#response">
+    <input type="text" id="id" name="id" placeholder="ID">
+    <input type="text" id="username" name="username" placeholder="Username">
+    <input type="email" id="email" name="email" placeholder="Email">
+    <button type="submit" hx-swap="outerHTML">Submit</button>
+  </form>
+        <div id="response"></div>
 
         <br/>
         <br/>
