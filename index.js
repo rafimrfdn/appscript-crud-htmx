@@ -5,7 +5,7 @@ const app = express();
 const axios = require('axios');
 
 // Serve static files from the 'public' directory
-app.use(express.static('public'));
+app.use(express.static('./public/'));
 
 //app.use(cors());
 app.use(bodyParser.json());
