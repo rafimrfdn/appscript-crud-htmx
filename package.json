@@ -2,9 +2,9 @@
   "name": "htmx-app",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
-    "dev": "nodemon api/index.js",
+    "dev": "nodemon index.js",
   },
   "keywords": [],
   "author": "",
