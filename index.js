@@ -4,19 +4,17 @@ const app = express();
 
 const axios = require('axios');
 
+
+// Must have setting to serve the public folder on vercel
+// Serve static files from the 'public' directory
 const path = require('path')
 app.use(express.static(path.join(__dirname, 'public')))
-
-// Serve static files from the 'public' directory
-//app.use(express.static('./public'));
 
 //app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended : true}));
 
 app.use(express.json());
-
-
 
 let counter = 0;
 
