@@ -14,40 +14,15 @@
 
 <body>
 
-  <h1>I want to run htmx</h1>
+  <h1>Halo from Express JS</h1>
 
-  <h2 id="counter">counter: <span>0</span></h2>
+  <h2 id="counter">Counter: <span>0</span></h2>
 
-  <button hx-get="/api/increment" hx-swap="innerHTML" hx-target="#counter">increment counter</button>
-
-        <a href="/add.html">Add</a>
-
-
-        <br/>
-        <br/>
-
-
-
-        <!-- <form hx-vals="#id,#username,#email"> -->
-<form id="myForm" hx-post="/submit" hx-target="#response">
-    <input type="text" id="id" name="id" placeholder="ID">
-    <input type="text" id="username" name="username" placeholder="Username">
-    <input type="email" id="email" name="email" placeholder="Email">
-    <button type="submit" hx-swap="outerHTML">Submit</button>
-  </form>
-        <div id="response"></div>
-
-
-
-        <!-- <button hx-get="/lihat" hx-target="#values">lihatt</button> -->
-        <button hx-get="/lihat" hx-target="#values">lihatt</button>
-        <!-- <button hx-get="/fetchData" hx-target="#values">fetch data</button> -->
-        <button hx-trigger="load, click" hx-get="/fetchData" hx-target="#values">fetch data</button>
-        <div id="values"></div>
-        <ul></ul>
-
-  <script>
-  </script>
+<div class="grid">
+            <button hx-get="/api/decrement" hx-swap="innerHTML" hx-target="#counter">-</button>
+            <button hx-get="/api/reset" hx-swap="innerHTML" hx-target="#counter">reset</button>
+            <button hx-get="/api/increment" hx-swap="innerHTML" hx-target="#counter">+</button>
+</div>
 
 </body>
 </html>
