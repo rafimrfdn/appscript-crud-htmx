@@ -108,6 +108,7 @@ function generateHTML(data) {
   data.data.forEach(item => {
     html += `<li>ID: ${item.id}, Username: ${item.username}, Email: ${item.email} `;
     // html += `<button onclick="deleteItem(${item.id})">Delete</button></li>`;
+    html += `<button hx-get="/update/${item.id}/edit" hx-target="#updateform">update</button></li>`;
     html += `<button hx-get="/delete/${item.id}">Delete</button></li>`;
   });
   html += '</ul>';
@@ -139,6 +140,43 @@ app.get('/delete/:id', async (req, res) => {
 
 
 
+// Route to handle update requests
+app.get('/update/:id/edit', (req, res) => {
+    res.send(`
+        <form method="POST" action="/update/${req.params.id}">
+            <input type="text" id="id" name="id" value="${req.params.id}">
+            <input type="text" id="username" name="username" placeholder="Username">
+            <input type="email" id="email" name="email" placeholder="Email">
+            <button type="submit">Submit</button>
+        </form>
+    `);
+});
+
+app.post('/update/:id', async (req, res) => {
+    try {
+        const { id, username, email } = req.body;
+        const dataToUpdate = { id, username, email };
+
+        const baseUrl = 'https://script.google.com/macros/s/AKfycbyaLyPo6_F_Shgza5Y8RWvjd94T99xBYQ2u_yuPqD9V-02HOliFqc5cX31UC9KsryBb/exec';
+        const updateUrl = `${baseUrl}?action=update&table=Users&id=${req.params.id}&data=${encodeURIComponent(JSON.stringify(dataToUpdate))}`;
+
+        const response = await axios.get(updateUrl);
+
+        console.log(dataToUpdate);
+
+        // Assuming your Google Apps Script responds with a message
+        res.send(response.data);
+    } catch (error) {
+        // Handle errors
+        console.error(error);
+        res.status(500).send('An error occurred');
+    }
+});
+
+
+
+
+
 
 
 app.get('/lihat', async (req, res) => {
@@ -155,6 +193,12 @@ app.get('/lihat', async (req, res) => {
     // res.json(JSON.stringify(showInfo));
     res.send(showInfo());
 });
+
+
+
+
+
+
 
 
 
