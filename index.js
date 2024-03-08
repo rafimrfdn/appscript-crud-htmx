@@ -162,16 +162,37 @@ app.get('/delete/:id', async (req, res) => {
 
 
 // Route to handle update requests
-app.get('/update/:id/edit', (req, res) => {
+app.get('/update/:id/edit', async (req, res) => {
+  try {
+    // Make a GET request to the external API endpoint
+    const response = await axios.get(`https://script.google.com/macros/s/AKfycbyaLyPo6_F_Shgza5Y8RWvjd94T99xBYQ2u_yuPqD9V-02HOliFqc5cX31UC9KsryBb/exec?action=read&table=Users&id=${req.params.id}`);
+
+    // Extract the data from the response
+    const responseData = response.data.data; // Accessing the nested "data" object
+
+    // Render an HTML form with the fetched data
     res.send(`
-        <form method="POST" action="/update/${req.params.id}" >
-            <input type="text" id="id" name="id" value="${req.params.id}">
-            <input type="text" id="username" name="username" placeholder="Username">
-            <input type="email" id="email" name="email" placeholder="Email">
-            <button type="submit">Submit</button>
-        </form>
+<dialog open>
+<div>
+      <h1>Edit User ${responseData.id}</h1>
+<div>
+        <form id="updaterespon" >
+            <input type="text" id="username" name="username" value="${responseData.username}">
+            <input type="email" id="email" name="email" value="${responseData.email}">
+<div class="grid">
+        <button autofocus>Close</button>
+        <button hx-post="/update/${req.params.id}" hx-target="#updaterespon" >Submit</button>
+</div>
+      </form>
+</dialog>
     `);
+  } catch (error) {
+    // If an error occurs during the request, send an error response
+    console.error('Error fetching data:', error);
+    res.status(500).send('Error fetching data');
+  }
 });
+
 
 app.post('/update/:id', async (req, res) => {
     try {
@@ -187,14 +208,16 @@ app.post('/update/:id', async (req, res) => {
 
         // Assuming your Google Apps Script responds with a message
         // res.send(response.data);
-        res.send("berhasil update data");
+        res.send(`
+        <p>Sukses update data</p>
+        <button autofocus>Close</button>
+            `);
     } catch (error) {
         // Handle errors
         console.error(error);
         res.status(500).send('An error occurred');
     }
 });
-
 
 
 

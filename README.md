@@ -16,8 +16,8 @@ https://gist.github.com/richardblondet/ce87a397ef669d4d25dd21ea02b9dda1
 ## what works?
 - create
 - read
+- update 
 - delete
 
 ## todo
-- update
-
+- fixing the bugs
