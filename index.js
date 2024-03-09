@@ -38,11 +38,11 @@ app.post('/submit', async (req, res) => {
     const data = {
       id: newId,
       username: req.body.username,
-      email: req.body.email,
+      email: req.body.email
       // timestamp
       // currentTime
     };
-        console.log(timestamp);
+        // console.log(timestamp);
 
     const response = await axios.get(`${BASE_URL}?action=insert&table=${TABLE}&data=${encodeURIComponent(JSON.stringify(data))}`);
 

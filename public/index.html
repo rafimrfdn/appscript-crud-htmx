@@ -33,14 +33,12 @@
         <h2>Submit form</h2>
         <!-- <form hx-vals="#id,#username,#email"> -->
 <form id="myForm" hx-post="/submit" hx-target="#response" style="max-width:300px;">
-    <input type="text" id="id" name="id" placeholder="ID">
     <input type="text" id="username" name="username" placeholder="Username">
     <input type="email" id="email" name="email" placeholder="Email">
     <button type="submit" hx-swap="outerHTML">Submit</button>
-  </form>
+</form>
 
-        <div id="response"></div>
-
+<div id="response"></div>
 
         <!-- <button hx-get="/lihat" hx-target="#values">lihatt</button> -->
         <!-- <button hx-get="/lihat" hx-target="#values">lihatt</button> -->
